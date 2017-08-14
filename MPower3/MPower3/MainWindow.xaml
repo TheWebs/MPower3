@@ -1,0 +1,28 @@
+﻿<Controls:MetroWindow x:Class="MPower3.MainWindow"
+                      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                      xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
+                      xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+                      Title="MPower 3"
+                      Height="444.118"
+                      Width="635.784">
+
+    <Grid>
+
+        <Button x:Name="button" Content=" ▶" HorizontalAlignment="Left" Height="93" Margin="10,10,0,0" VerticalAlignment="Top" Width="93" Style="{DynamicResource MetroCircleButtonStyle}" FontSize="36" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Cursor="Hand" Click="button_Click"/>
+        <Label x:Name="currentDuration" HorizontalAlignment="Left" Height="27" Margin="108,76,0,0" VerticalAlignment="Top" Width="109" FontSize="14" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+        <Slider x:Name="slider" HorizontalAlignment="Left" Height="27" Margin="222,76,0,0" VerticalAlignment="Top" Width="271" Thumb.DragCompleted="slider_DragCompleted" Thumb.DragStarted="slider_DragStarted" Style="{DynamicResource FlatSlider}"/>
+        <Label x:Name="totalDuration" HorizontalAlignment="Left" Height="27" Margin="498,76,0,0" VerticalAlignment="Top" Width="94" FontSize="14" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+        <Label x:Name="name" Content="Simbolo da pasta e esolhe uma com musicas" HorizontalAlignment="Left" Height="61" Margin="108,10,0,0" VerticalAlignment="Top" Width="510" FontSize="20" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
+        <Button x:Name="button1" HorizontalAlignment="Left" Height="27" Margin="592,76,0,0" VerticalAlignment="Top" Width="26" Background="{x:Null}" BorderBrush="{x:Null}" Cursor="Hand" ToolTip="Play files in folder" Click="button1_Click">
+            <iconPacks:PackIconEntypo Kind="Folder" Height="25" Width="25" />
+        </Button>
+        <ListBox x:Name="listBox" Margin="10,206,10,10" ItemsSource="{Binding musicas}">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding Key}" MouseDown="TextBlock_MouseDown"/>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+    </Grid>
+</Controls:MetroWindow>
