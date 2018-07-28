@@ -30,6 +30,7 @@ namespace MPower3
         public SortedList<string, string> musicas; //chave-valor nome-localizacao
         private int lastIndexPlayed = 0;
         private bool wasHumanTouch = false;
+        private bool autoSelect = true;
 
         public MainWindow()
         {
@@ -42,6 +43,16 @@ namespace MPower3
             m = new MediaPlayer();
             Bstate = false;
             m.MediaOpened += M_MediaOpened;
+            volumeSlider.Value = m.Volume;
+            if(Properties.Settings.Default.lastfolder != null && Properties.Settings.Default.lastfolder != "")
+            {
+                musicas = getFileList(Properties.Settings.Default.lastfolder);
+                listBox.ItemsSource = musicas;
+            }
+            if(listBox.Items.Count > 0)
+            {
+                m.Open(new Uri(((KeyValuePair<string, string>)listBox.Items.GetItemAt(0)).Value));
+            }
         }
 
         private void M_MediaOpened(object sender, EventArgs e)
@@ -57,9 +68,19 @@ namespace MPower3
             slider.Maximum = m.NaturalDuration.TimeSpan.Ticks;
             totalDuration.Content = m.NaturalDuration.TimeSpan.ToString(@"hh\:mm\:ss");
             name.Content = System.IO.Path.GetFileName(m.Source.LocalPath).Replace(".mp3", "");
-            m.Play();
-            if(!Bstate)
-            changeBstate();
+            if (!autoSelect)
+            {
+                m.Play();
+                if (!Bstate)
+                    changeBstate();
+            }
+            else
+            {
+                autoSelect = false;
+                listBox.SelectedIndex = 0;
+                lastIndexPlayed = 0;
+                
+            }
         }
 
         private void Timer_Tick(object sender, EventArgs e)
@@ -72,6 +93,7 @@ namespace MPower3
                 if(slider.Value == slider.Maximum)
                 {
                     m.Open(new Uri(getNextSong().Value));
+                    listBox.SelectedIndex = ++lastIndexPlayed;
                 }
             }
         }
@@ -115,11 +137,20 @@ namespace MPower3
         {
             Ookii.Dialogs.Wpf.VistaFolderBrowserDialog d = new Ookii.Dialogs.Wpf.VistaFolderBrowserDialog();
             d.Description = "Pick a folder with mp3 files to be played";
-            d.ShowDialog();
-            if(d.SelectedPath != null)
+            bool success = (bool)d.ShowDialog();
+            if(d.SelectedPath != null && success)
             {
+                autoSelect = true;
                 musicas = getFileList(d.SelectedPath);
                 listBox.ItemsSource = musicas;
+                if (listBox.Items.Count > 0)
+                {
+                    listBox.SelectedIndex = 0;
+                    m.Open(new Uri(((KeyValuePair<string, string>)listBox.Items.GetItemAt(0)).Value));
+                }
+                
+                Properties.Settings.Default.lastfolder = d.SelectedPath;
+                Properties.Settings.Default.Save();
             }
         }
 
@@ -168,6 +199,11 @@ namespace MPower3
                 return (KeyValuePair<string, string>)listBox.Items.GetItemAt(0);
             }
             
+        }
+
+        private void volumeSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            m.Volume = volumeSlider.Value;
         }
     }
 }
